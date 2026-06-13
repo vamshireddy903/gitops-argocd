@@ -26,7 +26,7 @@ steps:
       - push
       - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
 
-  # Step 5: Update Kubernetes YAML image tag
+  # Step 5: Update Kubernetes YAML image
   - name: "gcr.io/cloud-builders/gcloud"
     entrypoint: bash
     args:
@@ -34,7 +34,7 @@ steps:
       - |
         sed -i "s|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:.*|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA|g" k8s/deployment-svc.yaml
 
-  # Step 6: Commit & push updated YAML (FIXED)
+  # Step 6: Commit & push to GitHub (USING SUBSTITUTIONS)
   - name: "gcr.io/cloud-builders/git"
     entrypoint: bash
     args:
@@ -43,11 +43,13 @@ steps:
         git config --global user.email "cloudbuild@google.com"
         git config --global user.name "cloudbuild"
 
-        # IMPORTANT: ensure we are on main branch
         git checkout -B main
 
         git add k8s/deployment-svc.yaml
         git commit -m "Update image to $SHORT_SHA [skip ci]" || echo "No changes to commit"
+
+        # 🔐 Inject GitHub credentials from Trigger substitutions
+        git remote set-url origin https://$_GITHUB_USER:$_GITHUB_TOKEN@github.com/vamshireddy903/gitops-argocd.git
 
         git push origin main
 
