@@ -2,39 +2,31 @@ steps:
   # Step 1: Build Docker image
   - name: "gcr.io/cloud-builders/docker"
     args:
-      [
-        "build",
-        "-t",
-        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA",
-        "."
-      ]
+      - build
+      - "-t"
+      - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
+      - "."
 
   # Step 2: Push Docker image
   - name: "gcr.io/cloud-builders/docker"
     args:
-      [
-        "push",
-        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
-      ]
+      - push
+      - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
 
   # Step 3: Tag latest
   - name: "gcr.io/cloud-builders/docker"
     args:
-      [
-        "tag",
-        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA",
-        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
-      ]
+      - tag
+      - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
+      - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
 
-  # Step 4: Push latest
+  # Step 4: Push latest tag
   - name: "gcr.io/cloud-builders/docker"
     args:
-      [
-        "push",
-        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
-      ]
+      - push
+      - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
 
-  # ⭐ Step 5: Update Kubernetes YAML with new image
+  # Step 5: Update Kubernetes YAML image tag
   - name: "gcr.io/cloud-builders/gcloud"
     entrypoint: bash
     args:
@@ -42,17 +34,17 @@ steps:
       - |
         sed -i "s|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:.*|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA|g" k8s/deployment-svc.yaml
 
-  # ⭐ Step 6: Commit and push updated YAML back to GitHub
+  # Step 6: Commit & push updated YAML
   - name: "gcr.io/cloud-builders/git"
     entrypoint: bash
     args:
       - -c
       - |
-        git config user.email "cloudbuild@google.com"
-        git config user.name "cloudbuild"
+        git config --global user.email "cloudbuild@google.com"
+        git config --global user.name "cloudbuild"
 
         git add k8s/deployment-svc.yaml
-        git commit -m "Update image tag to $SHORT_SHA [CI skip]" || echo "No changes to commit"
+        git commit -m "Update image to $SHORT_SHA [skip ci]" || echo "No changes to commit"
         git push origin main
 
 images:
