@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: gitops-dashboard
-          image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest
+          image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:9254902
           ports:
             - containerPort: 8080
           env:
