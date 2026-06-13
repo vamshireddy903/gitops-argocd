@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cloud Native Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="hero">
+        <h1>☸️ Cloud Native Operations Dashboard</h1>
+        <p>GitOps Continuous Delivery Platform</p>
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <h2>🚀 Deployment</h2>
+            <p>Status</p>
+            <span class="green">Healthy</span>
+        </div>
+
+        <div class="card">
+            <h2>🔄 Argo CD</h2>
+            <p>Sync Status</p>
+            <span class="green">Synced</span>
+        </div>
+
+        <div class="card">
+            <h2>☁️ Kubernetes</h2>
+            <p>Platform</p>
+            <span>Google Kubernetes Engine</span>
+        </div>
+
+        <div class="card">
+            <h2>🏷 Version</h2>
+            <p>{{ version }}</p>
+        </div>
+
+        <div class="card">
+            <h2>📦 Image Tag</h2>
+            <p>{{ image }}</p>
+        </div>
+
+        <div class="card">
+            <h2>🌎 Environment</h2>
+            <p>{{ environment }}</p>
+        </div>
+
+        <div class="card">
+            <h2>🖥 Pod</h2>
+            <p>{{ hostname }}</p>
+        </div>
+
+        <div class="card">
+            <h2>⏰ Time</h2>
+            <p>{{ current_time }}</p>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <h3>DevOps Pipeline</h3>
+
+        <div class="pipeline">
+
+            <div class="step">
+                GitHub
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                Cloud Build
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                Artifact Registry
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                Argo CD
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="step">
+                GKE
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
