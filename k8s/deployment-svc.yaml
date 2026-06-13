@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitops-dashboard
+  labels:
+    app: gitops-dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gitops-dashboard
+  template:
+    metadata:
+      labels:
+        app: gitops-dashboard
+    spec:
+      containers:
+        - name: gitops-dashboard
+          image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_VERSION
+              value: "v1.0.0"
+            - name: ENVIRONMENT
+              value: "Production"
+            - name: IMAGE_TAG
+              value: "latest"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitops-dashboard-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: gitops-dashboard
+  ports:
+    - port: 80
+      targetPort: 8080
