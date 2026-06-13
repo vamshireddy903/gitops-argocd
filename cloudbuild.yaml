@@ -1,0 +1,42 @@
+steps:
+  # Step 1: Build Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA",
+        "."
+      ]
+
+  # Step 2: Push Docker image to Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
+      ]
+
+  # Step 3: Tag latest (optional but useful for GitOps)
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "tag",
+        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA",
+        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
+      ]
+
+  # Step 4: Push latest tag
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
+      ]
+
+images:
+  - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
+  - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
