@@ -34,7 +34,7 @@ steps:
       - |
         sed -i "s|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:.*|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA|g" k8s/deployment-svc.yaml
 
-  # Step 6: Commit & push updated YAML
+  # Step 6: Commit & push updated YAML (FIXED)
   - name: "gcr.io/cloud-builders/git"
     entrypoint: bash
     args:
@@ -43,8 +43,12 @@ steps:
         git config --global user.email "cloudbuild@google.com"
         git config --global user.name "cloudbuild"
 
+        # IMPORTANT: ensure we are on main branch
+        git checkout -B main
+
         git add k8s/deployment-svc.yaml
         git commit -m "Update image to $SHORT_SHA [skip ci]" || echo "No changes to commit"
+
         git push origin main
 
 images:
