@@ -9,7 +9,7 @@ steps:
         "."
       ]
 
-  # Step 2: Push Docker image to Artifact Registry
+  # Step 2: Push Docker image
   - name: "gcr.io/cloud-builders/docker"
     args:
       [
@@ -17,7 +17,7 @@ steps:
         "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
       ]
 
-  # Step 3: Tag latest (optional but useful for GitOps)
+  # Step 3: Tag latest
   - name: "gcr.io/cloud-builders/docker"
     args:
       [
@@ -26,13 +26,34 @@ steps:
         "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
       ]
 
-  # Step 4: Push latest tag
+  # Step 4: Push latest
   - name: "gcr.io/cloud-builders/docker"
     args:
       [
         "push",
         "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:latest"
       ]
+
+  # ⭐ Step 5: Update Kubernetes YAML with new image
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        sed -i "s|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:.*|image: asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA|g" k8s/deployment-svc.yaml
+
+  # ⭐ Step 6: Commit and push updated YAML back to GitHub
+  - name: "gcr.io/cloud-builders/git"
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        git config user.email "cloudbuild@google.com"
+        git config user.name "cloudbuild"
+
+        git add k8s/deployment-svc.yaml
+        git commit -m "Update image tag to $SHORT_SHA [CI skip]" || echo "No changes to commit"
+        git push origin main
 
 images:
   - "asia-south1-docker.pkg.dev/test-vamshi/argocd-repo/gitops-dashboard:$SHORT_SHA"
